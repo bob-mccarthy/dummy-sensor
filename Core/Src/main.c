@@ -59,10 +59,10 @@ uint32_t num_bytes = 0;
 uint8_t ackByte = 67;
 char buffer[4];
 #define BUFFER_SIZE 32768
-#define NUM_BUFFER_ELEMENTS BUFFER_SIZE / 4
+#define NUM_BUFFER_ELEMENTS BUFFER_SIZE
 #define HALF_BUFFER_ELEMENTS NUM_BUFFER_ELEMENTS / 2
 
-uint32_t outputBuffer[NUM_BUFFER_ELEMENTS];
+uint8_t outputBuffer[NUM_BUFFER_ELEMENTS];
 
 volatile uint32_t curr_transmitted_num = 0;
 volatile bool first_half_empty = false;
@@ -99,19 +99,14 @@ void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi)
 void HAL_SPI_TxHalfCpltCallback(SPI_HandleTypeDef *hspi)
 {
 //	first_half_empty = true;
+	curr_transmitted_num += HALF_BUFFER_ELEMENTS;
 // Logic happens IMMEDIATELY when the hardware signal is raised
-	uint32_t *pOut = &outputBuffer[0];
-	for(int i = 0; i < HALF_BUFFER_ELEMENTS; i++){
-		*(pOut++) = curr_transmitted_num++;
-	}
+
 }
 
 void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi)
 {
-	uint32_t *pOut = &outputBuffer[HALF_BUFFER_ELEMENTS];
-	for(int i = 0; i < HALF_BUFFER_ELEMENTS; i++){
-		*(pOut++) = curr_transmitted_num++;
-	}
+	curr_transmitted_num += HALF_BUFFER_ELEMENTS;
 }
 
 enum Comm_State{
@@ -163,7 +158,7 @@ int main(void)
   printf("I am waiting for the data\n");
 
   for (uint32_t i = 0; i < NUM_BUFFER_ELEMENTS; i++){
-	  outputBuffer[i] = curr_transmitted_num;
+	  outputBuffer[i] = 0x35;
 	  curr_transmitted_num++;
 //	  printf("%u\n",outputBuffer[i]);
   }
