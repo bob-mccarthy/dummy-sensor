@@ -100,7 +100,7 @@ void HAL_SPI_TxHalfCpltCallback(SPI_HandleTypeDef *hspi)
 {
 //	first_half_empty = true;
 	curr_transmitted_num += HALF_BUFFER_ELEMENTS;
-// Logic happens IMMEDIATELY when the hardware signal is raised
+
 
 }
 
@@ -158,10 +158,11 @@ int main(void)
   printf("I am waiting for the data\n");
 
   for (uint32_t i = 0; i < NUM_BUFFER_ELEMENTS; i++){
-	  outputBuffer[i] = 0x35;
+	  outputBuffer[i] = i % 256;
 	  curr_transmitted_num++;
 //	  printf("%u\n",outputBuffer[i]);
   }
+//  outputBuffer[133] = 0x67;
 //  printf("initialized buffer[15] is %u\n", (unsigned)buffer[15]);
   /* USER CODE END 2 */
 
